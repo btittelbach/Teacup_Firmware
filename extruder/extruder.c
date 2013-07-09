@@ -10,8 +10,10 @@
 #include	"heater.h"
 #include	"temp.h"
 #include	"timer.h"
+#include	"memory_barrier.h"
 
 static uint8_t motor_pwm;
+static uint8_t motor_idle_counter;
 
 void io_init(void) {
 	// setup I/O pins
@@ -70,6 +72,7 @@ void io_init(void) {
 void motor_init(void) {
 	//Enable an interrupt to be triggered when the step pin changes
 	//This will be PCIE0
+	motor_idle_counter = 0;
 	PCICR = MASK(PCIE0);
 	PCMSK0 = MASK(PCINT2);
 }
@@ -82,6 +85,11 @@ ISR(PCINT0_vect) {
 
 		//Turn on motors only on first tick to save power I guess
 		enable_motors();
+
+		//Set motor idle counter to zero
+		CLI_SEI_BUG_MEMORY_BARRIER();
+		motor_idle_counter = 0;
+		MEMORY_BARRIER();
 
 		//Advance the coil position
 		if (READ(E_DIR_PIN)) 
@@ -197,6 +205,15 @@ int main (void)
 		ifclock(CLOCK_FLAG_10MS) {
 			// check temperatures and manage heaters
 			temp_sensor_tick();
+		}
+
+		ifclock(CLOCK_FLAG_250MS) {
+			// this is of course bad code, since the interupt routine setting motor_idle_counter to 0 can be run at any time during this code. Worst case, it runs  while disable_motors() is halfway in progress
+			CLI_SEI_BUG_MEMORY_BARRIER();
+			motor_idle_counter++;
+			MEMORY_BARRIER();
+			if (motor_idle_counter > 3)
+				disable_motors();
 		}
 		
 		// check if we've had a new intercom packet
