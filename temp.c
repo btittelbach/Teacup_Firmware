@@ -18,6 +18,7 @@
 #include	"heater.h"
 #ifdef	TEMP_INTERCOM
 	#include	"intercom.h"
+	#include	"pinio.h"
 #endif
 
 #ifdef	TEMP_MAX6675
@@ -333,6 +334,8 @@ void temp_set(temp_sensor_t index, uint16_t temperature) {
 		temp_sensors_runtime[index].target_temp = temperature;
 		temp_sensors_runtime[index].temp_residency = 0;
 	#ifdef	TEMP_INTERCOM
+        if (temperature)
+            power_on(); //heating needs power supplied to extruderboard
 		if (temp_sensors[index].temp_type == TT_INTERCOM)
 			send_temperature(temp_sensors[index].temp_pin, temperature);
 	#endif
@@ -346,6 +349,19 @@ uint16_t temp_get(temp_sensor_t index) {
 		return 0;
 
 	return temp_sensors_runtime[index].last_read_temp;
+}
+
+/// check if all target temperatures are zero
+/// \retval 255 if all target temperatures are zero
+/// \retval 0 otherwise
+uint8_t temp_target_all_zero(void)
+{
+	uint8_t i=0;
+	for (; i < NUM_TEMP_SENSORS; i++) {
+		if (temp_sensors_runtime[i].target_temp)
+			return 0;
+	}
+	return 255;
 }
 
 // extruder doesn't have sersendf_P

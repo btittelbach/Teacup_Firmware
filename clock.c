@@ -14,6 +14,7 @@
 #include	"serial.h"
 #ifdef	TEMP_INTERCOM
 	#include	"intercom.h"
+	#include	"temp.h"
 #endif
 #include	"memory_barrier.h"
 
@@ -22,7 +23,11 @@
 	called from clock_10ms(), do not call directly
 */
 static void clock_250ms(void) {
-  if (heaters_all_zero()) {
+#ifdef	TEMP_INTERCOM
+	if (temp_target_all_zero() == 255) {
+#else
+	if (heaters_all_zero() == 255) {
+#endif
 		if (psu_timeout > (30 * 4)) {
 			power_off();
 		}

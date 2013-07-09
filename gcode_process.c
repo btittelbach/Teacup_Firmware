@@ -492,6 +492,9 @@ void process_gcode_command() {
         //? Teacup supports an optional P parameter as a zero-based temperature
         //? sensor index to address.
 				//?
+				#ifdef TEMP_INTERCOM
+				power_on();  //even for querying temp we need power to the extruder board
+				#endif
 				#ifdef ENFORCE_ORDER
 					queue_wait();
 				#endif
@@ -621,6 +624,9 @@ void process_gcode_command() {
 				//?
 				//? Wait for temperatures and other slowly-changing variables to arrive at their set values.
 
+				#ifdef TEMP_INTERCOM
+				power_on();  //even waiting on temp == 0 we need power to the extruder board, to check the temperature
+				#endif
 				enqueue(NULL);
 				break;
 
