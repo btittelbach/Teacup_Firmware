@@ -339,20 +339,6 @@ void heater_set(heater_t index, uint8_t value) {
 	}
 }
 
-/** \brief turn off all heaters
-
-	for emergency stop
-*/
-uint8_t heaters_all_off() {
-	uint8_t i;
-	for (i = 0; i < NUM_HEATERS; i++) {
-		if (heaters_runtime[i].heater_output > 0)
-			return 0;
-	}
-
-	return 255;
-}
-
 /** \brief set heater P factor
 	\param index heater to change factor for
 	\param p scaled P factor
