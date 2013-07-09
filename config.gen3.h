@@ -397,9 +397,8 @@ DEFINE_TEMP_SENSOR(bed,       TT_INTERCOM,    AIO1,      0)
 	I have searched high and low for a way to make the preprocessor do this for us, but so far I have not found a way.
 */
 
-// #define	HEATER_EXTRUDER HEATER_extruder
-
-// workaround for heated bed over intercom. HEATER_BED is the intercom temp channel number.
+// workaround for heated bed over intercom. HEATER_EXTRUDER, HEATER_BED are the intercom temp channel numbers.
+#define	HEATER_EXTRUDER 0
 #define HEATER_BED 1
 
 
