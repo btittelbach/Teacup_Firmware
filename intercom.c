@@ -61,7 +61,20 @@ void intercom_init(void)
 	intercom_flags = 0;
 }
 
+void send_heater_set(uint8_t index, uint8_t value) {
+	// set packet type
+	tx.packet.control_word = 106;
+	tx.packet.control_index = index;
+	// set payload
+	tx.packet.control_data_uint32 = 0;
+	tx.packet.control_data_uint32 = (uint32_t) value;
+}
+
 void send_temperature(uint8_t index, uint16_t temperature) {
+	// set packet type
+	tx.packet.control_word = 105;
+	tx.packet.control_index = 0;
+	// set payload
 	tx.packet.temp[index] = temperature;
 }
 
@@ -104,10 +117,6 @@ void start_send(void) {
 
 	// set start byte
 	tx.packet.start = START;
-
-	// set packet type
-	tx.packet.control_word = 105;
-	tx.packet.control_index = 0;
 
 	// calculate CRC for outgoing packet
 	for (i = 0; i < (sizeof(intercom_packet_t) - 1); i++) {

@@ -54,9 +54,14 @@
 
 #define	TEMP_THERMISTOR
 
-#define	HEATER_PIN	DIO11
+//e.e.: TechZoneRemix Gen3 Extruder Board:
+// 12V screw terminal C: DIO12
+// 12V screw terminal B: DIO11
+// 12V screw terminal A: AIO1
+
+#define HEATER_PIN	DIO12
 #define BED_PIN		AIO1
-#define FAN_PIN		DIO12
+#define FAN_PIN		DIO11
 
 // extruder settings
 #define	TEMP_HYSTERESIS				5
@@ -70,8 +75,9 @@ DEFINE_TEMP_SENSOR(noheater,	TT_THERMISTOR,		TRIM_POT_CHANNEL,		0)
 #endif
 
 #ifdef	DEFINE_HEATER
-DEFINE_HEATER(extruder,	DIO11)
+DEFINE_HEATER(extruder,	DIO12)
 DEFINE_HEATER(bed,			AIO1)
+DEFINE_HEATER(fan,			DIO11)
 #endif
 
 // list of PWM-able pins and corresponding timers

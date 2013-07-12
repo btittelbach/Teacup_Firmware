@@ -229,6 +229,13 @@ int main (void)
 					temp_set(1, read_temperature(1));
 					start_send();
 					break;
+                // M106 - Control FAN and other Heaters
+				case 106:
+					heater_set(rx.packet.control_index, (uint8_t) (rx.packet.control_data_uint32 & 0xFF));
+					send_temperature(0, temp_get(0));
+					send_temperature(1, temp_get(1));
+					start_send();				
+				break;
 				// M130 - set PID P factor
 				case 130:
 					pid_set_p(rx.packet.control_index, rx.packet.control_data_int32);

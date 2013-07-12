@@ -48,6 +48,9 @@ extern intercom_packet rx;
 /// initialise serial subsystem
 void intercom_init(void);
 
+/// if host, send heater pwm value
+void send_heater_set(uint8_t index, uint8_t value);
+
 /// if host, send target temperature to extruder
 /// if extruder, send actual temperature to host
 void send_temperature(uint8_t index, uint16_t temperature);

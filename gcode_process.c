@@ -24,6 +24,9 @@
 #include	"clock.h"
 #include	"config.h"
 #include	"home.h"
+#ifdef	TEMP_INTERCOM
+#include	"intercom.h"
+#endif
 
 /// the current tool
 uint8_t tool;
@@ -526,7 +529,12 @@ void process_gcode_command() {
         #endif
 				if ( ! next_target.seen_S)
 					break;
-        heater_set(next_target.P, next_target.S);
+				#ifdef TEMP_INTERCOM
+					power_on();  //need power on extruder board to talk to extruder board
+					send_heater_set(next_target.P, next_target.S);
+				#else
+					heater_set(next_target.P, next_target.S);
+				#endif
 				break;
 
 			case 110:
