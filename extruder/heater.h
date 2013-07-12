@@ -9,7 +9,7 @@
 #define	disable_heater()	heater_set(0, 0)
 
 #undef DEFINE_HEATER
-#define DEFINE_HEATER(name, pin) HEATER_ ## name,
+#define DEFINE_HEATER(name, pin, fanthreshold) HEATER_ ## name,
 typedef enum
 {
 	#include "config.h"

@@ -23,12 +23,13 @@ typedef struct {
 	volatile uint8_t *heater_port; ///< pointer to port. DDR is inferred from this pointer too
 	uint8_t						heater_pin;  ///< heater pin, not masked. eg for PB3 enter '3' here, or PB3_PIN or similar
 	volatile uint8_t *heater_pwm;  ///< pointer to 8-bit PWM register, eg OCR0A (8-bit) or ORC3L (low byte, 16-bit)
+	uint8_t heater_fan_startup_threshold;  ///< pointer to 8-bit PWM register, eg OCR0A (8-bit) or ORC3L (low byte, 16-bit)
 } heater_definition_t;
 
 #undef DEFINE_HEATER
 /// \brief helper macro to fill heater definition struct from config.h
 // #define DEFINE_HEATER(name, port, pin, pwm) { &(port), (pin), &(pwm) },
-#define	DEFINE_HEATER(name, pin) { &(pin ## _WPORT), pin ## _PIN, (pin ## _PWM) },
+#define	DEFINE_HEATER(name, pin, fanthreshold) { &(pin ## _WPORT), pin ## _PIN, (pin ## _PWM), fanthreshold },
 static const heater_definition_t heaters[NUM_HEATERS] =
 {
 	#include	"config.h"
@@ -325,6 +326,11 @@ void heater_set(heater_t index, uint8_t value) {
 	heaters_runtime[index].heater_output = value;
 
 	if (heaters[index].heater_pwm) {
+        if ( *(heaters[index].heater_pwm) < value && value < heaters[index].heater_fan_startup_threshold)
+        {
+            *(heaters[index].heater_pwm) = 255;
+            delay(50);
+        }
 		*(heaters[index].heater_pwm) = value;
 		#ifdef	DEBUG
 		if (debug_flags & DEBUG_PID)
