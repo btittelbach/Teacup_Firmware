@@ -67,20 +67,20 @@
 #define	TEMP_HYSTERESIS				5
 #define	TEMP_RESIDENCY_TIME		60
 
-#ifdef	DEFINE_TEMP_SENSOR
-DEFINE_TEMP_SENSOR(extruder,	TT_THERMISTOR,		TEMP_PIN_CHANNEL,		THERMISTOR_EXTRUDER)
-DEFINE_TEMP_SENSOR(bed,			TT_THERMISTOR,		TEMP_BED_PIN_CHANNEL,	THERMISTOR_EXTRUDER)
+#ifdef  DEFINE_TEMP_SENSOR
+DEFINE_TEMP_SENSOR(extruder,    TT_THERMISTOR,      TEMP_PIN_CHANNEL,       THERMISTOR_EXTRUDER)
+DEFINE_TEMP_SENSOR(bed,         TT_THERMISTOR,      TEMP_BED_PIN_CHANNEL,   THERMISTOR_EXTRUDER)
 // dummy temp sensor so analog_mask includes trim pot
-DEFINE_TEMP_SENSOR(noheater,	TT_THERMISTOR,		TRIM_POT_CHANNEL,		0)
+DEFINE_TEMP_SENSOR(noheater,    TT_THERMISTOR,      TRIM_POT_CHANNEL,       0)
 #endif
 // DEFINE_HEATER(<name>, <pin>, <fan startup threshold pwm value>)
 // fan startup threshold: FANs usually take more power to start spinning than to keep spinning,
 //                        so, below a given pwm value we start the fan with full power and after
 //                        50ms lower the output to the requested value.
-#ifdef	DEFINE_HEATER
-DEFINE_HEATER(extruder,	DIO12, 0)
-DEFINE_HEATER(bed,			AIO1, 0)
-DEFINE_HEATER(fan,			DIO11, 150)
+#ifdef  DEFINE_HEATER
+DEFINE_HEATER(extruder, DIO12, 0, 0)
+DEFINE_HEATER(bed,          AIO1, 0, 0)
+DEFINE_HEATER(fan,          DIO11, 0, 150)
 #endif
 
 // list of PWM-able pins and corresponding timers

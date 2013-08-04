@@ -2,14 +2,14 @@
 #define	_HEATER_H
 
 #include "config.h"
-#include	<stdint.h>
+#include <stdint.h>
 #include "temp.h"
 
 #define	enable_heater()		heater_set(0, 64)
 #define	disable_heater()	heater_set(0, 0)
 
 #undef DEFINE_HEATER
-#define DEFINE_HEATER(name, pin, fanthreshold) HEATER_ ## name,
+#define DEFINE_HEATER(name, pin, invert, fanthreshold) HEATER_ ## name,
 typedef enum
 {
 	#include "config.h"

@@ -21,7 +21,8 @@
 /// \brief simply holds pinout data- port, pin, pwm channel if used
 typedef struct {
 	volatile uint8_t *heater_port; ///< pointer to port. DDR is inferred from this pointer too
-	uint8_t						heater_pin;  ///< heater pin, not masked. eg for PB3 enter '3' here, or PB3_PIN or similar
+	uint8_t heater_pin;  ///< heater pin, not masked. eg for PB3 enter '3' here, or PB3_PIN or similar
+    uint8_t invert_pin;  ///< if not pwm and > 0, then invert pin (e.g. if you have a custom heatbed circuit)
 	volatile uint8_t *heater_pwm;  ///< pointer to 8-bit PWM register, eg OCR0A (8-bit) or ORC3L (low byte, 16-bit)
 	uint8_t heater_fan_startup_threshold;  ///< pointer to 8-bit PWM register, eg OCR0A (8-bit) or ORC3L (low byte, 16-bit)
 } heater_definition_t;
@@ -29,7 +30,7 @@ typedef struct {
 #undef DEFINE_HEATER
 /// \brief helper macro to fill heater definition struct from config.h
 // #define DEFINE_HEATER(name, port, pin, pwm) { &(port), (pin), &(pwm) },
-#define	DEFINE_HEATER(name, pin, fanthreshold) { &(pin ## _WPORT), pin ## _PIN, (pin ## _PWM), fanthreshold },
+#define DEFINE_HEATER(name, pin, invert, fanthreshold) { &(pin ## _WPORT), pin ## _PIN, invert, (pin ## _PWM), fanthreshold },
 static const heater_definition_t heaters[NUM_HEATERS] =
 {
 	#include	"config.h"
@@ -96,7 +97,10 @@ void heater_init() {
 	heater_t i;
 	// setup pins
 	for (i = 0; i < NUM_HEATERS; i++) {
-		*(heaters[i].heater_port) &= ~MASK(heaters[i].heater_pin);
+		if (heaters[i].invert_pin)
+			*(heaters[i].heater_port) |= MASK(heaters[i].heater_pin);
+		else
+			*(heaters[i].heater_port) &= ~MASK(heaters[i].heater_pin);
 		// DDR is always 1 address below PORT. ugly code but saves ram and an extra field in heaters[] which will never be used anywhere but here
 		*(heaters[i].heater_port - 1) |= MASK(heaters[i].heater_pin);
 		if (heaters[i].heater_pwm) {
@@ -338,7 +342,7 @@ void heater_set(heater_t index, uint8_t value) {
 		#endif
 	}
 	else {
-		if (value >= 8)
+		if ((value >= 8) ^ (heaters[index].invert_pin != 0))
 			*(heaters[index].heater_port) |= MASK(heaters[index].heater_pin);
 		else
 			*(heaters[index].heater_port) &= ~MASK(heaters[index].heater_pin);
