@@ -33,6 +33,10 @@
 #include	"analog.h"
 #endif
 
+#ifdef  TEMP_DS1820
+#include "ds1820.h"
+#endif
+
 typedef enum {
 	PRESENT,
 	TCOPEN
@@ -96,6 +100,15 @@ void temp_init() {
 				send_temperature(0, 0);
 				break;
 		#endif
+
+        #ifdef  TEMP_DS1820
+            case TT_ONEWIRE:
+                //discover temp sensors
+                ds1820_discover();
+                //set resolution of sensor with index temp_pin (ordered by onewire addresses)
+                ds1820_set_resolution(temp_sensors[i].temp_pin, temp_sensors[i].additional);
+                break;
+        #endif
 
 			default: /* prevent compiler warning */
 				break;
@@ -266,6 +279,19 @@ void temp_sensor_tick() {
 
 					break;
 				#endif	/* TEMP_DUMMY */
+
+                #ifdef  TEMP_DS1820
+                    case TT_ONEWIRE:
+                        temp = (uint16_t) ds1820_read_temperature(temp_sensors[i].temp_pin);
+
+                        //~ //set resolution of sensor with index temp_pin (ordered by onewire addresses)
+                        //~ ds1820_set_resolution(temp_sensors[i].temp_pin, temp_sensors[i].additional);
+                        ds1820_start_measuring(temp_sensors[i].temp_pin);
+
+                        temp_sensors_runtime[i].next_read_time = ds1820_get_conversion_time_10ms(temp_sensors[i].additional);
+
+                        break;
+                #endif
 
 				default: /* prevent compiler warning */
 					break;

@@ -78,7 +78,7 @@ struct {
 /// default scaled D factor, equivalent to 24
 #define		DEFAULT_D				24576
 /// default scaled I limit
-#define		DEFAULT_I_LIMIT	384
+#define     DEFAULT_I_LIMIT 384
 
 /// this lives in the eeprom so we can save our PID settings for each heater
 typedef struct {

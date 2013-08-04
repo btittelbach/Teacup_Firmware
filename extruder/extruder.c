@@ -11,6 +11,9 @@
 #include	"temp.h"
 #include	"timer.h"
 #include	"memory_barrier.h"
+#ifdef TEMP_DS1820
+#include "onewire.h"
+#endif
 
 static uint8_t motor_pwm;
 static uint8_t motor_idle_counter;
@@ -167,6 +170,11 @@ void init(void) {
 
 	// set up inputs and outputs
 	io_init();
+
+    #ifdef  TEMP_DS1820
+        //init onewire
+        ONEWIRE_INIT(ONEWIRE_PIN);
+    #endif
 
 	// temp sensor
 	temp_init();
