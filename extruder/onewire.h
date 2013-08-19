@@ -112,10 +112,11 @@
 #define DS1820_RESOLUTION_10BITS  0x20
 #define DS1820_RESOLUTION_11BITS  0x40
 #define DS1820_RESOLUTION_12BITS  0x60
-#define DS1820_TCONV_MS_9BITS  100
-#define DS1820_TCONV_MS_10BITS  190
-#define DS1820_TCONV_MS_11BITS  390
-#define DS1820_TCONV_MS_12BITS  800
+// Rounded Up Conversion times + extra time, so we don't talk on onewire bus too often since that means disabling interrupts for a few microseconds
+#define DS1820_TCONV_MS_9BITS  (100 + 200)
+#define DS1820_TCONV_MS_10BITS  (190 + 310)
+#define DS1820_TCONV_MS_11BITS  ( 390 + 310)
+#define DS1820_TCONV_MS_12BITS  (800 + 100)
 
 
 #define DS2890_FAMILY_ID                0x2c
