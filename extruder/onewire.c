@@ -117,6 +117,7 @@ sample code bearing this copyright.
 
 #include "onewire.h"
 #include "delay.h"
+#include "memory_barrier.h"
 #include <avr/interrupt.h>
 
 
@@ -155,25 +156,25 @@ uint8_t owi_reset(void)
 	uint8_t r;
 	uint8_t retries = 125;
 
-	cli();
+	ATOMIC_START
 	DIRECT_MODE_INPUT(reg, mask);
-	sei();
+	ATOMIC_END
 	// wait until the wire is high... just in case
 	do {
 		if (--retries == 0) return 0;
 		delay_us(2);
 	} while ( !DIRECT_READ(reg, mask));
 
-	cli();
+	ATOMIC_START
 	DIRECT_WRITE_LOW(reg, mask);
 	DIRECT_MODE_OUTPUT(reg, mask);	// drive output low
-	sei();
+	ATOMIC_END
 	delay_us(480);
-	cli();
+	ATOMIC_START
 	DIRECT_MODE_INPUT(reg, mask);	// allow it to float
 	delay_us(70);
 	r = !DIRECT_READ(reg, mask);
-	sei();
+	ATOMIC_END
 	delay_us(410);
 	return r;
 }
@@ -188,20 +189,20 @@ void owi_write_bit(uint8_t v)
 	register volatile IO_REG_TYPE *reg IO_REG_ASM = owi_baseReg;
 
 	if (v & 1) {
-		cli();
+		ATOMIC_START
 		DIRECT_WRITE_LOW(reg, mask);
 		DIRECT_MODE_OUTPUT(reg, mask);	// drive output low
 		delay_us(10);
 		DIRECT_WRITE_HIGH(reg, mask);	// drive output high
-		sei();
+		ATOMIC_END
 		delay_us(55);
 	} else {
-		cli();
+		ATOMIC_START
 		DIRECT_WRITE_LOW(reg, mask);
 		DIRECT_MODE_OUTPUT(reg, mask);	// drive output low
 		delay_us(65);
 		DIRECT_WRITE_HIGH(reg, mask);	// drive output high
-		sei();
+		ATOMIC_END
 		delay_us(5);
 	}
 }
@@ -216,14 +217,14 @@ uint8_t owi_read_bit(void)
 	register volatile IO_REG_TYPE *reg IO_REG_ASM = owi_baseReg;
 	uint8_t r;
 
-	cli();
+	ATOMIC_START
 	DIRECT_MODE_OUTPUT(reg, mask);
 	DIRECT_WRITE_LOW(reg, mask);
 	delay_us(3);
 	DIRECT_MODE_INPUT(reg, mask);	// let pin float, pull up will raise
 	delay_us(10);
 	r = DIRECT_READ(reg, mask);
-	sei();
+	ATOMIC_END
 	delay_us(53);
 	return r;
 }
@@ -242,10 +243,10 @@ void owi_write(uint8_t v, uint8_t power /* = 0 */) {
 	owi_write_bit( (bitMask & v)?1:0);
     }
     if ( !power) {
-	cli();
+	ATOMIC_START
 	DIRECT_MODE_INPUT(owi_baseReg, owi_bitmask);
 	DIRECT_WRITE_LOW(owi_baseReg, owi_bitmask);
-	sei();
+	ATOMIC_END
     }
 }
 
@@ -254,10 +255,10 @@ void owi_write_bytes(const uint8_t *buf, uint16_t count, bool power /* = 0 */) {
   for (i = 0 ; i < count ; i++)
     owi_write(buf[i],0);
   if (!power) {
-    cli();
+    ATOMIC_START
     DIRECT_MODE_INPUT(owi_baseReg, owi_bitmask);
     DIRECT_WRITE_LOW(owi_baseReg, owi_bitmask);
-    sei();
+    ATOMIC_END
   }
 }
 
@@ -302,9 +303,9 @@ void owi_skip()
 
 void owi_depower()
 {
-	cli();
+	ATOMIC_START
 	DIRECT_MODE_INPUT(owi_baseReg, owi_bitmask);
-	sei();
+	ATOMIC_END
 }
 
 #if ONEWIRE_SEARCH
