@@ -49,10 +49,13 @@
 #define TEMP_BED_PIN AIO6
 #define TEMP_BED_PIN_CHANNEL 6
 
+//Read digital temperature from DS18B20 connected to this pin
+#define ONEWIRE_PIN DIO2
 
 #define	REFERENCE	REFERENCE_AVCC
 
 #define	TEMP_THERMISTOR
+// #define TEMP_DS1820
 
 //e.e.: TechZoneRemix Gen3 Extruder Board:
 // 12V screw terminal C: DIO12
@@ -71,11 +74,11 @@
 DEFINE_TEMP_SENSOR(extruder,    TT_THERMISTOR,      TEMP_PIN_CHANNEL,       THERMISTOR_EXTRUDER)
 DEFINE_TEMP_SENSOR(bed,         TT_THERMISTOR,      TEMP_BED_PIN_CHANNEL,   THERMISTOR_EXTRUDER)
 //OneWire DS18x22 example with 10 bits accuracy (valid values: 9 .. 12, lower is faster)
-//DEFINE_TEMP_SENSOR(bed,         TT_ONEWIRE,     0,  10)
+//DEFINE_TEMP_SENSOR(bed,         TT_DS1820,     0,  10)
 // dummy temp sensor so analog_mask includes trim pot
 DEFINE_TEMP_SENSOR(noheater,    TT_THERMISTOR,      TRIM_POT_CHANNEL,       0)
 #endif
-// DEFINE_HEATER(<name>, <pin>, <fan startup threshold pwm value>)
+// DEFINE_HEATER(<name>, <pin>, <invert?>, <fan startup threshold pwm value>)
 // fan startup threshold: FANs usually take more power to start spinning than to keep spinning,
 //                        so, below a given pwm value we start the fan with full power and after
 //                        50ms lower the output to the requested value.

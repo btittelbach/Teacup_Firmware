@@ -102,7 +102,7 @@ void temp_init() {
 		#endif
 
         #ifdef  TEMP_DS1820
-            case TT_ONEWIRE:
+            case TT_DS1820:
                 //discover temp sensors
                 ds1820_discover();
                 //set resolution of sensor with index temp_pin (ordered by onewire addresses)
@@ -281,7 +281,7 @@ void temp_sensor_tick() {
 				#endif	/* TEMP_DUMMY */
 
                 #ifdef  TEMP_DS1820
-                    case TT_ONEWIRE:
+                    case TT_DS1820:
                         temp = (uint16_t) ds1820_read_temperature(temp_sensors[i].temp_pin);
 
                         //~ //set resolution of sensor with index temp_pin (ordered by onewire addresses)
@@ -314,7 +314,7 @@ void temp_sensor_tick() {
 }
 
 /// report whether all temp sensors are reading their target temperatures
-/// used for M109 and friends
+/// used for M116 and friends
 uint8_t	temp_achieved() {
 	temp_sensor_t i;
 	uint8_t all_ok = 255;

@@ -301,6 +301,10 @@
 // #define	TEMP_AD595
 // #define	TEMP_PT100
 // #define	TEMP_INTERCOM
+// #define	TEMP_DS1820
+
+//Read digital temperature from DS18B20 connected to this pin
+//#define ONEWIRE_PIN DIO2
 
 /***************************************************************************\
 *                                                                           *
@@ -308,7 +312,7 @@
 * limited by the number of available ATmega pins.                           *
 *                                                                           *
 * Types are same as TEMP_ list above - TT_MAX6675, TT_THERMISTOR, TT_AD595, *
-*   TT_PT100, TT_INTERCOM. See list in temp.c.                              *
+*   TT_PT100, TT_INTERCOM, TT_DS1820. See list in temp.c.                              *
 *                                                                           *
 * The "additional" field is used for TT_THERMISTOR only. It defines the     *
 * name of the table(s) in ThermistorTable.h to use. Typically, this is      *

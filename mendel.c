@@ -46,6 +46,10 @@
 #include	"arduino.h"
 #include	"clock.h"
 #include	"intercom.h"
+#ifdef TEMP_DS1820
+#include "onewire.h"
+#endif
+ 
 
 /// initialise all I/O - set pins as input or output, turn off unused subsystems, etc
 void io_init(void) {
@@ -207,6 +211,11 @@ void init(void) {
 	// start up analog read interrupt loop,
 	// if any of the temp sensors in your config.h use analog interface
 	analog_init();
+
+    #ifdef  TEMP_DS1820
+        //init onewire
+        ONEWIRE_INIT(ONEWIRE_PIN);
+    #endif
 
 	// set up temperature inputs
 	temp_init();
