@@ -125,6 +125,7 @@ void temp_sensor_tick() {
 		}
 		else {
 			uint16_t	temp = 0;
+            int16_t ds_temp = 0;
 			//time to deal with this temp sensor
 			switch(temp_sensors[i].temp_type) {
 				#ifdef	TEMP_MAX6675
@@ -282,7 +283,12 @@ void temp_sensor_tick() {
 
                 #ifdef  TEMP_DS1820
                     case TT_DS1820:
-                        temp = (uint16_t) ds1820_read_temperature(temp_sensors[i].temp_pin);
+                        ds_temp = ds1820_read_temperature(temp_sensors[i].temp_pin);
+                        temp = (uint16_t) ds_temp;
+                        if (ds_temp == -1)
+                        {
+                            ds1820_set_resolution(temp_sensors[i].temp_pin, temp_sensors[i].additional);
+                        }
 
                         //~ //set resolution of sensor with index temp_pin (ordered by onewire addresses)
                         //~ ds1820_set_resolution(temp_sensors[i].temp_pin, temp_sensors[i].additional);
